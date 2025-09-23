@@ -1,0 +1,39 @@
+services:
+  web_docker_api:
+    image: samandardeveloper19/web_docker_api
+    container_name: web_docker_api
+    restart: always
+    build:
+      context: .
+      dockerfile: DockerApi/Dockerfile
+    ports:
+      - "7001:7001"
+    depends_on:
+      - web_docker_db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:7001
+    networks:
+      - dev-network
+
+  web_docker_db:
+    image: postgres
+    container_name: web_docker_db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=231020044
+      - POSTGRES_DB=WebApiDockerDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge
+
+volumes:
+  postgresql-data:
