@@ -1,28 +1,32 @@
-﻿name: Docker CD                                    # Имя workflow
+﻿name: CD Pipeline
 
 on:
-  push:                                            # Запускать при push
-    branches: [ "master" ]                           # Только в main
-  workflow_dispatch:                               # И вручную через интерфейс
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
 
 jobs:
-  docker:                                          # Имя job'а
-    runs-on: ubuntu-latest                         # Агент: Ubuntu
+  docker:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-      - uses: actions/checkout@v4                    # Получаем код
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Docker login
-        uses: docker/login-action@v3                 # Логинимся в Docker Hub
+        uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }} # Логин из Secrets
-          password: ${{ secrets.DOCKERHUB_TOKEN }}    # Токен из Secrets
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v6            # Собираем и пушим образ
+        uses: docker/build-push-action@v6
         with:
-          context: .                                 # Контекст сборки (корень репо)
-          push: true                                 # Публиковать в реестр
-          tags: |                                    # Теги образа
-            ${{ secrets.DOCKERHUB_USERNAME }}/crm-api:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/crm-api:${{ github.sha }}
+          context: .
+          push: true
+          pull: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/dockerapi:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/dockerapi:${{ github.sha }}

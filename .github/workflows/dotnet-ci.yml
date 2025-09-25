@@ -1,35 +1,26 @@
-﻿name: .NET CI (Build only)                         # Имя workflow
+﻿name: CI Pipeline
 
 on:
-  push:                                            # Запускать при push
-    branches: [ "master" ]                           # Только в main
-  pull_request:                                    # И при PR
+  push:
+    branches: [ "master" ]
+  pull_request:
     branches: [ "master" ]
 
 jobs:
-  build:                                           # Имя job'а
-    runs-on: ubuntu-latest                         # Агент: Ubuntu
+  build:
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4                    # Получаем код из репозитория
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4                # Устанавливаем .NET SDK
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'                    # Версия SDK
+          dotnet-version: '8.0.x'
 
       - name: Restore
-        run: dotnet restore DockerApi.sln                  # Восстанавливаем NuGet пакеты
+        run: dotnet restore DockerApi.sln
 
       - name: Build
-        run: dotnet build DockerApi.sln --configuration Release --no-restore  # Сборка
-
-      - name: Publish DockerApi
-        run: dotnet publish DockerApi/DockerApi.csproj -c Release -o out             # Паблишим API
-
-      - name: Upload artifact (DockerApi)
-        uses: actions/upload-artifact@v4             # Загружаем артефакт в GitHub Actions
-        with:
-          name: docker-api-publish                      # Имя артефакта
-          path: out/**                               # Что загружать
-          if-no-files-found: error                   # Если нет файлов → ошибка
+        run: dotnet build DockerApi.sln --configuration Release --no-restore
