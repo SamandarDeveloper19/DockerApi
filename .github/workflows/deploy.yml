@@ -22,7 +22,7 @@ jobs:
 
       - name: Deploy on PWD
         run: |
-          ssh -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=yes ${{ secrets.PWD_USER }}@${{ secrets.PWD_HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=yes ${{ secrets.PWD_USER }}@${{ secrets.PWD_HOST }} << 'EOF'
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:latest
             docker stop web_docker_api || true && docker rm web_docker_api || true
