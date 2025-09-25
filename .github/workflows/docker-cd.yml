@@ -29,5 +29,5 @@ jobs:
           push: true
           pull: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/dockerapi:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/dockerapi:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:${{ github.sha }}
