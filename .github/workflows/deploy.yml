@@ -29,11 +29,11 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Ensure app dir exists on server
-        run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes \
-            "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" \
-            "mkdir -p '${{ env.APP_DIR }}'"
+      #- name: Ensure app dir exists on server
+      #  run: |
+      #    ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes \
+      #      "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" \
+      #      "mkdir -p '${{ env.APP_DIR }}'"
 
       - name: Upload docker-compose.yml
         run: |
