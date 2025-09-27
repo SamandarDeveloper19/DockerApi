@@ -22,7 +22,7 @@ jobs:
 
       - name: Deploy on PWD
         run: |
-          ssh -i ./id_ed25519 -o StrictHostKeyChecking=no -p 22 \
+          ssh -i ./id_ed25519 -o StrictHostKeyChecking=yes -p 22 \
             ${{ secrets.PWD_USER }}@${{ secrets.PWD_HOST }} << 'EOF'
               docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
               docker pull "${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:latest"
