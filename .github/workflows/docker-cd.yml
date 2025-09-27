@@ -1,15 +1,13 @@
 ﻿name: CD Pipeline
 
 on:
-  workflow_run:
-    workflows: ["CI Pipeline"]
-    types:
-      - completed
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   docker:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout
@@ -25,9 +23,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: DockerApi/Dockerfile
+          #file: DockerApi/Dockerfile
           push: true
-          pull: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:${{ github.sha }}
