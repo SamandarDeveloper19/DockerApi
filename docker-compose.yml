@@ -2,9 +2,6 @@ services:
   web_docker_api:
     container_name: web_docker_api
     restart: always
-    build:
-      context: .
-      dockerfile: DockerApi/Dockerfile
     image: samandardeveloper19/web_docker_api
     ports:
       - "7001:7001"
