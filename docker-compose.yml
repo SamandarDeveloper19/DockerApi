@@ -2,14 +2,17 @@ services:
   web_docker_api:
     container_name: web_docker_api
     restart: always
+    build:
+      context: .
+      dockerfile: DockerApi/Dockerfile
     image: samandardeveloper19/web_docker_api
     ports:
-      - "7001:7001"
+      - "8080:80"
     depends_on:
       - web_docker_db
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:7001
+      - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Host=web_docker_db;Port=5432;Database=WebApiDockerDb;Username=postgres;Password=231020044 
     networks:
       - dev-network
