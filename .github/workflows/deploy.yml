@@ -1,3 +1,4 @@
+
 name: Deploy Pipeline
 
 on:
@@ -20,11 +21,14 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.PWD_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.PWD_HOST }} >> ~/.ssh/known_hosts
+          # Pre-approve host key to avoid verification failure
+          ssh-keyscan -p 22 -t rsa,ecdsa,ed25519 ${{ secrets.PWD_HOST }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          cat ~/.ssh/known_hosts
 
       - name: Deploy on PWD
         run: |
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.PWD_USER }}@${{ secrets.PWD_HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes ${{ secrets.PWD_USER }}@${{ secrets.PWD_HOST }} << 'EOF'
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:latest
             docker stop web_docker_api || true && docker rm web_docker_api || true
