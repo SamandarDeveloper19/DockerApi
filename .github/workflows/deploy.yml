@@ -15,18 +15,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Write SSH key to file
+      - name: Setup SSH
         run: |
-          echo "${{ secrets.PWD_SSH_KEY }}" > id_ed25519
-          chmod 600 id_ed25519
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PWD_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.PWD_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy on PWD
         run: |
-          ssh -i ./id_ed25519 -o StrictHostKeyChecking=yes -p 22 \
-            ${{ secrets.PWD_USER }}@${{ secrets.PWD_HOST }} << 'EOF'
-              docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
-              docker pull "${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:latest"
-              docker stop web_docker_api || true
-              docker rm web_docker_api || true
-              docker run -d --name web_docker_api -p 8080:80 "${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:latest"
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.PWD_USER }}@${{ secrets.PWD_HOST }} << 'EOF'
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:latest
+            docker stop web_docker_api || true && docker rm web_docker_api || true
+            docker run -d --name web_docker_api -p 8080:80 ${{ secrets.DOCKERHUB_USERNAME }}/web_docker_api:latest
           EOF
+
